@@ -105,6 +105,7 @@ while True:
                 1. Inventario
                 2. Despachos
                 3. Usuarios
+                4. Otros
                 0. Salir
             ==============================
             """)
@@ -381,6 +382,50 @@ while True:
                     ==============================
                     """)
                     continue
+            elif opcion == '4':
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print("""
+                ===========OTROS===========
+                Seleccione una opción:
+                    1. Configurar alertas
+                    2. Confirmar Despacho
+                    3. Modo monitor stock
+                    0. Regresar
+                """)
+                opcion = input("OPCION: ")
+                if opcion == '1':
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print("""
+                    ===========OTROS===========
+                    Configurando alertas...
+                    ==============================
+                    """)
+                    continue
+                elif opcion == '2':
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print("""
+                    ===========OTROS===========
+                    Confirmar Despacho...
+                    ==============================
+                    """)
+                    continue
+                elif opcion == '3':
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print("""
+                    ===========OTROS===========
+                    Modo monitor stock...
+                    ==============================
+                    """)
+                    continue
+                else:
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print("""
+                    ===========OTROS===========
+                    Regresando...
+                    ==============================
+                    """)
+                    continue
+            
             elif opcion == '0':
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print("""
