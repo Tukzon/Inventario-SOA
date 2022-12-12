@@ -24,6 +24,7 @@ def fill(data):
 
 while True:
     main_menu = False
+    session_mail = ''
     print("""
     ==========INVENTARIO==========
     Seleccione una opción:
@@ -88,6 +89,7 @@ while True:
                 recibido = recibido[12:].decode()
                 if recibido == '1':
                     print("Sesión iniciada correctamente")
+                    global_mail = email
                     main_menu = True
                     break
                 elif recibido == '0':
@@ -135,13 +137,12 @@ while True:
                     precio = input("Ingrese el precio del producto: ")
                     cantidad = input("Ingrese la cantidad del producto: ")
                     descripcion = input("Ingrese la descripcion del producto: ")
-                    datos = idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
-                    aux = fill(len(datos+ 'addpr'))
-                    msg = aux + 'addpr' + datos
+                    datos = "registrar "+session_mail + " " + idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
+                    aux = fill(len(datos+ 'prods'))
+                    msg = aux + 'prods' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
                     continue
                 elif opcion == '2':
                     os.system('cls' if os.name == 'nt' else 'clear')

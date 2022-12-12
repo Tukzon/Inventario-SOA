@@ -35,7 +35,7 @@ while True:
         if tipoTransaccion == 'registrar':
             query = "INSERT INTO usuarios (email, password, nombre) VALUES ('" + email + "', '" + password + "', '" + nombre + "')"
             query = query.replace(" ", "-")
-            reg_data = "registrar "+query
+            reg_data = "registrar "+email+ " "+query
             aux = fill(len(reg_data+ 'dbget'))
             msg = aux + 'dbget' + reg_data
             #print("mensaje enviado: "+msg)

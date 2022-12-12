@@ -26,7 +26,7 @@ recibido=server.recv(4096)
 
 while True:
     datos=server.recv(4096)
-    print("desde db: "+datos.decode('utf-8'))
+    #print("desde db: "+datos.decode('utf-8'))
     if datos.decode('utf-8').find('dbget')!=-1:
         print("Petición realizada a la base de datos")
         datos = datos[10:]
@@ -49,7 +49,11 @@ while True:
 
         if tipoTransaccion == "registrar":
             try:
+                query = data[2]
+                query = query.replace("-", " ")
+                mail = data[1]
                 cursor.execute(query)
+                cursor.execute("INSERT INTO inventarios (admin_mail, nombre) VALUES ('" + mail + "', 'inventario_"+mail + "')")
                 db.commit()
                 server.sendall(bytes('00010dbgetusuario_registrado','utf-8'))
             except:
