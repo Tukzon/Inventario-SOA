@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=inventario
+      - TZ=America/Santiago
+    restart: always
+    volumes:
+     - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  proyecto:
+    container_name: servicios
+    build: ./proyecto
+    ports:
+      - 5000:5000
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - socket
+      - postgres
+    restart: always
+      
+  socket:
+    container_name: socket
+    build: ./socket
+    ports:
+      - 3000:5000
+    env_file:
+      - .env
+    volumes:
+      - ./socket:/app
+    restart: always
