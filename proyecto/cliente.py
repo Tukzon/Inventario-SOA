@@ -45,16 +45,23 @@ while True:
         nombre = input("Ingrese su nombre: ")
 
         hash_pwd = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        print(hash_pwd)
+        #print(hash_pwd)
 
-        datos = email + " " + hash_pwd + " " + nombre
-        aux = fill(len(datos+ 'usre1'))
-        msg = aux + 'usre1' + datos
-        print("mensaje enviado: "+msg)
+        datos = "registrar "+email + " " + hash_pwd + " " + nombre
+        aux = fill(len(datos+ 'users'))
+        msg = aux + 'users' + datos
+        #print("mensaje enviado: "+msg)
         server.sendall(bytes(msg,'utf-8'))
         recibido=server.recv(4096)
-        print(recibido[10:].decode('utf-8'))
-        continue
+        if recibido.decode('utf-8').find('users')!=-1:
+            recibido = recibido[12:]
+            #print("desde usuario: "+recibido.decode('utf-8'))
+            if recibido.decode('utf-8') == '1':
+                print("Usuario registrado satisfactoriamente")
+                continue
+            else:
+                print("Error al registrar usuario")
+                continue
         
     elif opcion == '2':
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -66,7 +73,9 @@ while True:
         email = input("Ingrese su correo: ")
         password = input("Ingrese su contraseña: ")
 
-        datos = email + " " + password
+        hash_pwd = hashlib.sha256(password.encode('utf-8')).hexdigest()
+
+        datos = email + " " + hash_pwd
         aux = fill(len(datos+ 'login'))
         msg = aux + 'login' + datos
         print("mensaje enviado: "+msg)

@@ -29,23 +29,21 @@ while True:
         email = data[0]
         password = data[1]
 
-        login_data = email + " " + password
+        query = "SELECT * FROM usuarios WHERE email = '" + email + "' AND password = '" + password + "'"
+        query = query.replace(" ", "-")
+        login_data = "iniciarsesion "+query
 
-        aux = fill(len(login_data+ 'dblo1'))
-        msg = aux + 'dblo1' + login_data
+        aux = fill(len(login_data+ 'dbget'))
+        msg = aux + 'dbget' + login_data
         print("mensaje enviado: "+msg)
         server.sendall(bytes(msg,'utf-8'))
         recibido=server.recv(4096)
-        print("recibido desde login: "+recibido.decode('utf-8'))
-        if recibido.decode('utf-8').find('dblo1')!=-1:
+        if recibido.decode('utf-8').find('dbget')!=-1:
             recibido = recibido[12:]
-            print(recibido.decode('utf-8'))
-            if recibido.decode('utf-8') == '1':
+            if recibido.decode('utf-8') == 'sesion_iniciada':
                 print("Usuario logueado")
-                #send 1 to cliente to show login success
                 server.sendall(bytes('00010login1','utf-8'))
-            else:
-                print("Usuario no logueado")
-                #send 0 to cliente to show login fail
+            elif recibido.decode('utf-8') == 'fallo_login':
+                print("Credenciales ingresadas no son correctas")
                 server.sendall(bytes('00010login0','utf-8'))
                 
