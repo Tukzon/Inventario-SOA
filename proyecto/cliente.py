@@ -234,15 +234,18 @@ while True:
                     Agregando despacho...
                     ==============================
                     """)
+                    mail = input("Ingrese el mail de responsable de despacho: ")
+                    direccion = input("Ingrese la direccion de despacho: ")
+                    comprador = input("Ingrese el nombre de persona que recibirá: ")
                     totalProd = input("Ingrese el total de productos: ")
                     prods = []
                     for i in range(int(totalProd)):
                         idProd = input("Ingrese el id del producto: ")
                         cantidad = input("Ingrese la cantidad del producto: ")
-                        prods.append(idProd + " " + cantidad)
-                    datos = totalProd + " " + str(prods)
-                    aux = fill(len(datos+ 'addes'))
-                    msg = aux + 'addes' + datos
+                        prods.append(idProd + "-" + cantidad)
+                    datos = "registrar "+ session_mail+ " " +mail + " " +direccion+ " "+comprador + " " +str(prods)
+                    aux = fill(len(datos+ 'despa'))
+                    msg = aux + 'despa' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
