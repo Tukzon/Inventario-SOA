@@ -59,3 +59,12 @@ while True:
             except:
                 db.rollback()
                 server.sendall(bytes('00010dbgetfallo_registro','utf-8'))
+
+        if tipoTransaccion == "registrarprod":
+            try:
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetproducto_registrado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetproducto_no_registrado','utf-8'))

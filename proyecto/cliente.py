@@ -6,6 +6,7 @@ import threading
 import os
 import bcrypt
 import hashlib
+import time
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('socket', 5000)
@@ -21,6 +22,8 @@ def fill(data):
     while len(aux) < 5:
         aux = '0' + aux
     return aux
+
+
 
 while True:
     main_menu = False
@@ -89,7 +92,7 @@ while True:
                 recibido = recibido[12:].decode()
                 if recibido == '1':
                     print("Sesión iniciada correctamente")
-                    global_mail = email
+                    session_mail = email
                     main_menu = True
                     break
                 elif recibido == '0':
@@ -143,6 +146,15 @@ while True:
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
+                    if recibido.decode('utf-8').find('prods')!=-1:
+                        recibido = recibido[12:]
+                        #print("desde usuario: "+recibido.decode('utf-8'))
+                        if recibido.decode('utf-8') == '1':
+                            print("Producto registrado satisfactoriamente")
+                            continue
+                        else:
+                            print("Error al registrar producto")
+                    time.sleep(3)
                     continue
                 elif opcion == '2':
                     os.system('cls' if os.name == 'nt' else 'clear')

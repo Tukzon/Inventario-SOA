@@ -22,21 +22,23 @@ recibido=server.recv(4096)
 while True:
     datos = server.recv(4096)
     if datos.decode('utf-8').find('prods')!=-1:
+        print("Se ha recibido un mensaje para productos")
         datos = datos[10:]
         target = datos.decode()
         data = target.split()
+        print(data)
         tipoTransaccion = data[0]
 
         if tipoTransaccion == 'registrar':
             mail = data[1]
-            idProd = data[1]
-            nombre = data[2]
-            cantidad = data[3]
-            precio = data[4]
-            descripcion = data[5]
+            idProd = data[2]
+            nombre = data[3]
+            cantidad = data[4]
+            precio = data[5]
+            descripcion = data[6]
 
             subquery = "(SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + mail + "')"
-            query = "WITH ins1 AS (INSERT INTO productos (id, inventario, stock ) VALUES ('" + idProd + "', '" + subquery + "', '" + cantidad + "') RETURNING id), ins2 AS (INSERT INTO data_productos (id, inventario, nombre, precio, descripcion) VALUES ('" + idProd + "', '" + subquery + "', '" + nombre + "', '" + precio + "', '" + descripcion + "') RETURNING id) SELECT * FROM ins1, ins2"
+            query = "WITH ins1 AS (INSERT INTO productos (id, inventario, stock ) VALUES ('" + idProd + "', " + subquery + ", '" + cantidad + "') RETURNING id), ins2 AS (INSERT INTO data_productos (id, inventario, nombre, precio, descripcion) VALUES ('" + idProd + "', " + subquery + ", '" + nombre + "', '" + precio + "', '" + descripcion + "') RETURNING id) SELECT * FROM ins1, ins2"
 
             query = query.replace(" ", "-")
             reg_data = "registrarprod "+query
