@@ -189,9 +189,11 @@ while True:
                         recibido = recibido[12:]
                         if recibido.decode('utf-8') == '1':
                             print("Producto modificado satisfactoriamente")
+                            time.sleep(3)
                             continue
                         else:
                             print("Error al modificar producto")
+                            time.sleep(3)
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
