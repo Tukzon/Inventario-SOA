@@ -71,6 +71,32 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetproducto_no_registrado','utf-8'))
 
+        if tipoTransaccion == "leerprod":
+            try:
+                query = data[1]
+                query = query.replace("-", " ")
+                #print(query) #LA QUERY ES CORRECTA, VERIFICADA CON PSQL
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                #print(rows) #CORRECTO
+                if row is None:
+                    print("No hay productos")
+                    server.sendall(bytes('00010dbgetfallo_leerprod','utf-8'))
+                else:
+                    prods = []
+                    for row in rows:
+                        prod = str(row[0]) + "-" + row[1] + "-" + str(row[2]) + "-" + row[3] + "-" + str(row[4])
+                        prods.append(prod)
+                    #print(prods) #FUNCIONA
+                    #transforma prods a string, separando cada producto por un guión
+
+                    msg = "leerprod " + "/".join(prods)
+                    print(msg)
+                    server.sendall(bytes('00010dbget'+msg,'utf-8'))
+            except:
+                print("Error al leer productos") 
+                server.sendall(bytes('00010dbgetfallo_leerprod','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]

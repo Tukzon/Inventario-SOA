@@ -198,13 +198,41 @@ while True:
                     Listando productos...
                     ==============================
                     """)
-                    aux = fill(len('listpr'))
-                    msg = aux + 'lsprd'
+                    prodID = input("Ingrese el id del producto (presione enter para mostrar todos): ")
+                    if prodID == '':
+                        datos = "leer "+session_mail
+                        aux = fill(len(datos+ 'prods'))
+                        msg = aux + 'prods' + datos
+                    else:
+                        datos = "leer "+session_mail + " " + prodID
+                        aux = fill(len(datos+ 'prods'))
+                        msg = aux + 'prods' + datos
+
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
-                    continue
+                    if recibido.decode('utf-8').find('leerprod')!=-1:
+                        try:
+                            recibido = recibido[12:]
+                            recibido = recibido.decode('utf-8').split(' ')
+                            productos = recibido[1]
+                            productos = productos.replace('/', ' ')
+                            productos = productos.split(' ')
+                            #transforma los elementos dentro de productos, cambiando los - como elementos de un subarray
+                            for i in range(len(productos)):
+                                productos[i] = productos[i].split('-')
+                            
+                            #imprime los productos
+                            print("ID\tNombre\tCant.\tDesc.\tPrecio")
+                            for i in range(len(productos)):
+                                print(productos[i][0]+"\t"+productos[i][1]+"\t"+productos[i][2]+"\t"+productos[i][3]+"\t"+productos[i][4])
+                            #press enter to continue
+                            input("Presione enter para continuar...")
+                            continue
+                        except:
+                            print("Error al listar productos")
+                            time.sleep(3)
+                            continue
                 elif opcion == '0':
                     os.system('cls' if os.name == 'nt' else 'clear')
                     print("""

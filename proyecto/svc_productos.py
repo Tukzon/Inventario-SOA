@@ -55,4 +55,30 @@ while True:
                 else:
                     print("Error al registrar producto")
                     server.sendall(bytes('00010prods0','utf-8'))
+        
+        if tipoTransaccion == 'leer':
+            session_mail = data[1]
+            try:
+                # Si se envia el id del producto, se busca solo ese producto
+                idProd = data[2]
+                query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE productos.id = '" + idProd + "' AND inventarios.admin_mail = '" + session_mail + "'"
+            except:
+                # Si no se envia el id del producto, se buscan todos los productos del usuario
+                query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE inventarios.admin_mail = '" + session_mail + "'"
+            query = query.replace(" ", "-")
+
+            reg_data = "leerprod "+query
+            aux = fill(len(reg_data+ 'dbget'))
+            msg = aux + 'dbget' + reg_data
+            server.sendall(bytes(msg,'utf-8'))
+            recibido=server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("desde producto: "+recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'fallo_leerprod':
+                    print("Producto no encontrado")
+                    server.sendall(bytes('00010prods0','utf-8'))
+                else:
+                    print("Producto encontrado")
+                    server.sendall(bytes('00010prods1'+recibido.decode('utf-8'),'utf-8'))
 
