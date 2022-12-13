@@ -24,6 +24,8 @@ def fill(data):
 print("Iniciado servicio de base de datos")
 recibido=server.recv(4096)
 
+alertasActivas = []
+
 while True:
     datos=server.recv(4096)
     #print("desde db: "+datos.decode('utf-8'))
@@ -68,3 +70,31 @@ while True:
             except:
                 db.rollback()
                 server.sendall(bytes('00010dbgetproducto_no_registrado','utf-8'))
+
+        if tipoTransaccion == "alertastock":
+            try:
+                session_mail = data[1]
+                query = data[2]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                if rows is None:
+                    server.sendall(bytes('00010dbgetfallo_alerta','utf-8'))
+                else:
+                    if session_mail not in alertasActivas:
+                        alertasActivas.append(session_mail)
+                        #threading.Thread(target=alertaStock, args=(session_mail, rows)).start()
+                    else:
+                        server.sendall(bytes('00010dbgetalerta_activa','utf-8'))
+                    numProds = len(rows)
+                    prods = []
+                    for row in rows:
+                        prod = row[0] + "-" + row[1] + "-" + row[2]
+                        prods.append(prod)
+                    msg = "alertastock " + str(numProds) + " " + " ".join(prods)
+                    print(msg)
+                    server.sendall(bytes('00010dbget'+msg,'utf-8'))
+            except:
+                server.sendall(bytes('00010dbgetfallo_alerta','utf-8'))
+
+

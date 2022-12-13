@@ -416,6 +416,21 @@ while True:
                     Configurando alertas...
                     ==============================
                     """)
+                    idProd = input("Ingrese el id del producto: ")
+                    stockMin = input("Ingrese el stock minimo: ")
+                    datos = session_mail+" "+idProd + " " + stockMin
+                    aux = fill(len(datos+ 'alert'))
+                    msg = aux + 'alert' + datos
+                    print("mensaje enviado: "+msg)
+                    server.sendall(bytes(msg,'utf-8'))
+                    recibido=server.recv(4096)
+                    if recibido.decode('utf-8').find('alert')!=-1:
+                        recibido=recibido[10:].decode('utf-8')
+                        if recibido == '1':
+                            print("Alerta configurada correctamente")
+                        else:
+                            print("Error al configurar alerta")
+                        time.sleep(3)
                     continue
                 elif opcion == '2':
                     os.system('cls' if os.name == 'nt' else 'clear')
