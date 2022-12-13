@@ -164,17 +164,34 @@ while True:
                     ==============================
                     """)
                     idProd = input("Ingrese el id del producto: ")
-                    nombre = input("Ingrese el nombre del producto: ")
-                    precio = input("Ingrese el precio del producto: ")
-                    cantidad = input("Ingrese la cantidad del producto: ")
-                    descripcion = input("Ingrese la descripcion del producto: ")
-                    datos = idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
-                    aux = fill(len(datos+ 'modpr'))
-                    msg = aux + 'modpr' + datos
+                    nombre = input("Ingrese el nombre del producto: (dejar en blanco para no modificar) ")
+                    precio = input("Ingrese el precio del producto: (dejar en blanco para no modificar) ")
+                    cantidad = input("Ingrese la cantidad del producto: (dejar en blanco para no modificar)")
+                    descripcion = input("Ingrese la descripcion del producto: (dejar en blanco para no modificar) ")
+                    if nombre == '' and precio == '' and cantidad == '' and descripcion == '':
+                        print("No se modificó el producto")
+                        continue
+                    if nombre == '':
+                        nombre = '/'
+                    if precio == '':
+                        precio = '/'
+                    if cantidad == '':
+                        cantidad = '/'
+                    if descripcion == '':
+                        descripcion = '/'
+                    datos = "actualizar "+session_mail+ " "+ idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
+                    aux = fill(len(datos+ 'prods'))
+                    msg = aux + 'prods' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('prods')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '1':
+                            print("Producto modificado satisfactoriamente")
+                            continue
+                        else:
+                            print("Error al modificar producto")
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')

@@ -87,8 +87,6 @@ while True:
                     for row in rows:
                         prod = str(row[0]) + "-" + row[1] + "-" + str(row[2]) + "-" + row[3] + "-" + str(row[4])
                         prods.append(prod)
-                    #print(prods) #FUNCIONA
-                    #transforma prods a string, separando cada producto por un guión
 
                     msg = "leerprod " + "/".join(prods)
                     print(msg)
@@ -96,6 +94,19 @@ while True:
             except:
                 print("Error al leer productos") 
                 server.sendall(bytes('00010dbgetfallo_leerprod','utf-8'))
+
+        if tipoTransaccion == "actualizarprod":
+            try:
+                query_list = data[1]
+                query_list = query_list.split("/")
+                for query in query_list:
+                    query = query.replace("-", " ")
+                    cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetproducto_actualizado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetproducto_no_actualizado','utf-8'))
 
         if tipoTransaccion == "alertastock":
             try:

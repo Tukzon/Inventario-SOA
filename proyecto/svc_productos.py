@@ -82,3 +82,47 @@ while True:
                     print("Producto encontrado")
                     server.sendall(bytes('00010prods1'+recibido.decode('utf-8'),'utf-8'))
 
+        if tipoTransaccion == 'actualizar':
+            session_mail = data[1]
+            idProd = data[2]
+            nombre = data[3]
+            precio = data[4]
+            cantidad = data[5]
+            descripcion = data[6]
+
+            query_list = []
+            if nombre != '/':
+                query_nombre = "UPDATE data_productos SET nombre = '" + nombre + "' WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                query_nombre = query_nombre.replace(" ", "-")
+                query_list.append(query_nombre)
+            if precio != '/':
+                query_precio = "UPDATE data_productos SET precio = '" + precio + "' WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                query_precio = query_precio.replace(" ", "-")
+                query_list.append(query_precio)
+            if cantidad != '/':
+                query_cantidad = "UPDATE productos SET stock = '" + cantidad + "' WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                query_cantidad = query_cantidad.replace(" ", "-")
+                query_list.append(query_cantidad)
+            if descripcion != '/':
+                query_descripcion = "UPDATE data_productos SET descripcion = '" + descripcion + "' WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                query_descripcion = query_descripcion.replace(" ", "-")
+                query_list.append(query_descripcion)
+
+            
+            query = "/".join(query_list)
+            reg_data = "actualizarprod "+query
+            aux = fill(len(reg_data+ 'dbget'))
+            msg = aux + 'dbget' + reg_data
+            server.sendall(bytes(msg,'utf-8'))
+            recibido=server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("desde producto: "+recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'fallo_actualizarprod':
+                    print("No se pudo actualizar el producto")
+                    server.sendall(bytes('00010prods0','utf-8'))
+                else:
+                    print("Producto actualizado satisfactoriamente")
+                    server.sendall(bytes('00010prods1','utf-8'))
+                    
+
