@@ -439,6 +439,20 @@ while True:
                     Confirmar Despacho...
                     ==============================
                     """)
+                    idDesp = input("Ingrese el id del despacho: ")
+                    datos = session_mail+" "+idDesp
+                    aux = fill(len(datos+ 'conde'))
+                    msg = aux + 'conde' + datos
+                    print("mensaje enviado: "+msg)
+                    server.sendall(bytes(msg,'utf-8'))
+                    recibido=server.recv(4096)
+                    if recibido.decode('utf-8').find('conde')!=-1:
+                        recibido=recibido[10:].decode('utf-8')
+                        if recibido == '1':
+                            print("Despacho confirmado correctamente")
+                        else:
+                            print("Error al confirmar despacho")
+                        time.sleep(3)
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
