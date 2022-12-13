@@ -203,12 +203,22 @@ while True:
                     ==============================
                     """)
                     idProd = input("Ingrese el id del producto: ")
-                    aux = fill(len(nombre+ 'delpr'))
-                    msg = aux + 'delpr' + idProd
+                    permanente = input("¿Desea eliminar el producto permanentemente? (s/n): ")
+                    datos = "eliminar "+session_mail+ " "+permanente+ " "+ idProd
+                    aux = fill(len(datos+ 'prods'))
+                    msg = aux + 'prods' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('prods')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '1':
+                            print("Operación efectuada satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al eliminar producto")
+                            time.sleep(3)
                     continue
                 elif opcion == '4':
                     os.system('cls' if os.name == 'nt' else 'clear')

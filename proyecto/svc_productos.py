@@ -124,5 +124,33 @@ while True:
                 else:
                     print("Producto actualizado satisfactoriamente")
                     server.sendall(bytes('00010prods1','utf-8'))
-                    
+
+        if tipoTransaccion == 'eliminar':   
+            session_mail = data[1]
+            permanente = data[2]
+            idProd = data[3]
+
+            if permanente == 's':
+                query = "DELETE FROM productos WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+            elif permanente == 'n':
+                query = "UPDATE productos SET valido = '0' WHERE id = '" + idProd + "' AND inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+            else:
+                print("Error al eliminar el producto")
+                server.sendall(bytes('00010prods0','utf-8'))
+                
+            query = query.replace(" ", "-")
+            reg_data = "eliminarprod "+query
+            aux = fill(len(reg_data+ 'dbget'))
+            msg = aux + 'dbget' + reg_data
+            server.sendall(bytes(msg,'utf-8'))
+            recibido=server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("desde producto: "+recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'producto_eliminado':
+                    print("Producto eliminado satisfactoriamente")
+                    server.sendall(bytes('00010prods1','utf-8'))
+                else:
+                    print("Producto no eliminado")
+                    server.sendall(bytes('00010prods0','utf-8'))
 

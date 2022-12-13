@@ -108,6 +108,17 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetproducto_no_actualizado','utf-8'))
 
+        if tipoTransaccion == "eliminarprod":
+            try:
+                query = data[1]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetproducto_eliminado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetproducto_no_eliminado','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]
