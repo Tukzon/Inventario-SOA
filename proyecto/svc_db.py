@@ -48,6 +48,15 @@ while True:
                     server.sendall(bytes('00010dbgetsesion_iniciada','utf-8'))
             except:
                 server.sendall(bytes('00010dbgetfallo_login','utf-8'))
+        
+        if tipoTransaccion == "tipo":
+            try:
+                query = "SELECT tipo FROM usuarios WHERE email = '" + str(data[1]) + "'"
+                cursor.execute(query)
+                row = cursor.fetchall()
+                server.sendall(bytes('00010dbget'+str(row[0][0]),'utf-8'))
+            except:
+                server.sendall(bytes('00010dbgetfallo_tipo','utf-8'))
 
         if tipoTransaccion == "registrar":
             try:
@@ -58,6 +67,15 @@ while True:
                 cursor.execute("INSERT INTO inventarios (admin_mail, nombre) VALUES ('" + mail + "', 'inventario_"+mail + "')")
                 db.commit()
                 server.sendall(bytes('00010dbgetusuario_registrado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetfallo_registro','utf-8'))
+
+        if tipoTransaccion == "registrart":
+            try:
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgettrabajador_registrado','utf-8'))
             except:
                 db.rollback()
                 server.sendall(bytes('00010dbgetfallo_registro','utf-8'))

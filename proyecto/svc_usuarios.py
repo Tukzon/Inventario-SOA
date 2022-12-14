@@ -21,7 +21,6 @@ recibido=server.recv(4096)
 
 while True:
     datos=server.recv(4096)
-    #print("desde usuario: "+datos.decode('utf-8'))
     #REGISTRO DE NUEVO USUARIO
     if datos.decode('utf-8').find('users')!=-1:
         datos = datos[10:]
@@ -49,6 +48,30 @@ while True:
                     server.sendall(bytes('00010users1','utf-8'))
                 else:
                     print("Error al registrar usuario")
+                    server.sendall(bytes('00010users0','utf-8'))
+
+        elif tipoTransaccion == 'registrartrabajador':
+            session_mail = data[1]
+            nombre = data[2]
+            email = data[3]
+            password = data[4]
+            subquery = "(SELECT id FROM inventarios WHERE admin_mail = '" + session_mail + "')"
+            query = "INSERT INTO usuarios (email, password, nombre, inventario, tipo) VALUES ('" + email + "', '" + password + "', '" + nombre + "', " + subquery + ", '2')"
+            query = query.replace(" ", "-")
+            reg_data = "registrart "+query
+            aux = fill(len(reg_data+ 'dbget'))
+            msg = aux + 'dbget' + reg_data
+            #print("mensaje enviado: "+msg)
+            server.sendall(bytes(msg,'utf-8'))
+            recibido=server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("desde usuario: "+recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'trabajador_registrado':
+                    print("Trabajador registrado satisfactoriamente")
+                    server.sendall(bytes('00010users1','utf-8'))
+                else:
+                    print("Error al registrar Trabajador")
                     server.sendall(bytes('00010users0','utf-8'))
 
 

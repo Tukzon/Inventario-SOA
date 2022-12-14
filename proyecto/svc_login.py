@@ -17,7 +17,7 @@ def fill(data):
 
 print("Iniciado servicio de login")
 recibido=server.recv(4096)
-print("login: "+recibido.decode('utf-8'))
+#print("login: "+recibido.decode('utf-8'))
 
 while True:
     datos=server.recv(4096)
@@ -35,7 +35,7 @@ while True:
 
         aux = fill(len(login_data+ 'dbget'))
         msg = aux + 'dbget' + login_data
-        print("mensaje enviado: "+msg)
+        #print("mensaje enviado: "+msg)
         server.sendall(bytes(msg,'utf-8'))
         recibido=server.recv(4096)
         if recibido.decode('utf-8').find('dbget')!=-1:

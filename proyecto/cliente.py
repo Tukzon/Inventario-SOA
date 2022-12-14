@@ -30,6 +30,7 @@ def fill(data):
 while True:
     main_menu = False
     session_mail = ''
+    userType = -1
     print("""
     ==========INVENTARIO==========
     Seleccione una opción:
@@ -96,6 +97,34 @@ while True:
                     print("Sesión iniciada correctamente")
                     session_mail = email
                     main_menu = True
+                    datos = "tipo "+session_mail
+                    aux = fill(len(datos+ 'dbget'))
+                    msg = aux + 'dbget' + datos
+                    #print("mensaje enviado: "+msg)
+                    server.sendall(bytes(msg,'utf-8'))
+                    recibido=server.recv(4096)
+                    if recibido.decode('utf-8').find('dbget')!=-1:
+                        recibido = recibido[12:].decode()
+                        print("desde cliente: "+recibido)
+                        if recibido == '0':
+                            userType = 0
+                            print("Usuario gestor")
+                            time.sleep(2)
+                            break
+                        elif recibido == '2':
+                            userType = 2
+                            print("Usuario trabajador")
+                            time.sleep(2)
+                            break
+                        elif recibido == '1':
+                            userType = 1
+                            print("Usuario administrador")
+                            time.sleep(2)
+                            break
+                        else:
+                            print("USER-Error")
+                            time.sleep(2)
+                            continue
                     break
                 elif recibido == '0':
                     print("Usuario o contraseña incorrectos")
@@ -442,7 +471,8 @@ while True:
 
                             input("\nPresione enter para continuar...")
                             continue
-                       
+                    continue
+
                 elif opcion == '0':
                     os.system('cls' if os.name == 'nt' else 'clear')
                     print("""
@@ -470,19 +500,31 @@ while True:
                     os.system('cls' if os.name == 'nt' else 'clear')
                     print("""
                     ==========USUARIOS==========
-                    Agregando usuario...
+                    Agregando trabajador...
                     ==============================
                     """)
                     nombre = input("Ingrese el nombre del usuario: ")
                     correo = input("Ingrese el correo del usuario: ")
                     contra = input("Ingrese la contraseña del usuario: ")
-                    datos = nombre + " " + correo + " " + contra
-                    aux = fill(len(datos+ 'regi2'))
-                    msg = aux + 'regi2' + datos
+
+                    hash_pwd = hashlib.sha256(contra.encode('utf-8')).hexdigest()
+
+                    datos = "registrartrabajador "+session_mail+" "+nombre + " " + correo + " " + hash_pwd
+                    aux = fill(len(datos+ 'users'))
+                    msg = aux + 'users' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('users')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '1':
+                            print("Trabajador agregado satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al agregar trabajador")
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '2':
                     os.system('cls' if os.name == 'nt' else 'clear')
