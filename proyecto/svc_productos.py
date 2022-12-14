@@ -63,8 +63,8 @@ while True:
                 idProd = data[2]
                 query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE productos.id = '" + idProd + "' AND inventarios.admin_mail = '" + session_mail + "'"
             except:
-                # Si no se envia el id del producto, se buscan todos los productos del usuario
-                query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE inventarios.admin_mail = '" + session_mail + "'"
+                # Si no se envia el id del producto, se buscan todos los productos activos del usuario
+                query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE inventarios.admin_mail = '" + session_mail + "' AND productos.valido = '1'"
             query = query.replace(" ", "-")
 
             reg_data = "leerprod "+query
