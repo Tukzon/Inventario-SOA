@@ -7,6 +7,8 @@ import os
 import bcrypt
 import hashlib
 import time
+import tabulate
+import re
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('socket', 5000)
@@ -237,7 +239,7 @@ while True:
                         aux = fill(len(datos+ 'prods'))
                         msg = aux + 'prods' + datos
 
-                    print("mensaje enviado: "+msg)
+                    #print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
                     if recibido.decode('utf-8').find('leerprod')!=-1:
@@ -247,15 +249,13 @@ while True:
                             productos = recibido[1]
                             productos = productos.replace('/', ' ')
                             productos = productos.split(' ')
-                            #transforma los elementos dentro de productos, cambiando los - como elementos de un subarray
+                            data = []
+                            column_alignments = ["right", "left", "right", "left", "center", "center", "center", "right"]
                             for i in range(len(productos)):
                                 productos[i] = productos[i].split('-')
-                            
-                            #imprime los productos
-                            print("ID\tNombre\tCant.\tDesc.\tPrecio")
-                            for i in range(len(productos)):
-                                print(productos[i][0]+"\t"+productos[i][1]+"\t"+productos[i][2]+"\t"+productos[i][3]+"\t"+productos[i][4])
-                            #press enter to continue
+                                data.append(productos[i])
+
+                            print(tabulate.tabulate(data, headers=['ID', 'Nombre', 'Cant.', 'Desc.', 'Precio'], tablefmt='orgtbl', stralign=column_alignments))
                             input("Presione enter para continuar...")
                             continue
                         except:
@@ -366,13 +366,45 @@ while True:
                     Listando despachos...
                     ==============================
                     """)
-                    aux = fill(len('lsdes'))
-                    msg = aux + 'lsdes'
-                    print("mensaje enviado: "+msg)
+                    despID = input("Ingrese el id del despacho: (enter para mostrar todos) ")
+                    if despID == '':
+                        despID = '0'
+                    datos = "leer "+session_mail + " " + despID
+                    aux = fill(len(datos+ 'despa'))
+                    msg = aux + 'despa' + datos
+                    #print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
-                    continue
+                    if recibido.decode('utf-8').find('despa')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '0':
+                            print("No hay deespachos registrados")
+                            time.sleep(3)
+                            continue
+                        else:
+                            recibido = recibido.decode('utf-8').split(' ')
+                            data = recibido[1]
+                            data = data.replace('|','')
+                            data_rows = re.split("/", data)
+
+                            data = []
+                            for row in data_rows:
+                                data.append(row.split("-"))
+                            
+                            #data = data.replace('|','')
+                            #data = data.split('-')
+                            #data = [data[i:i+8] for i in range(0, len(data), 8)]
+                            column_alignments = ["right", "left", "right", "left", "center", "center", "center", "right"]
+
+                            print(tabulate.tabulate(data, headers=['ID','Inventario','Productos','Cantidad','Direccion','Responsable','Comprador','Valido'], tablefmt='orgtbl', stralign=column_alignments))
+
+                            #print("ID\tInventario\tProductos\tCantidad\tDireccion\tResponsable\tComprador\tValido")
+                            #for i in range(len(data)):
+                            #    print(data[i]+ "\t", end='')
+                            #APPLY TABULATE FOR DATA COMMITED BELOW
+                            input("\nPresione enter para continuar...")
+                            continue
+                       
                 elif opcion == '0':
                     os.system('cls' if os.name == 'nt' else 'clear')
                     print("""

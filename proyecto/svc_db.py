@@ -131,6 +131,28 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetdespacho_no_agregado','utf-8'))
 
+        if tipoTransaccion == "leerdespacho":
+            try:
+                query = data[1]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                if rows is None:
+                    server.sendall(bytes('00010dbgetfallo_leerdespacho','utf-8'))
+                else:
+                    despachos = []
+                    for row in rows:
+                        despacho = str(row[0]) + "-" + str(row[1]) + "-" + str(row[2]).replace(" ","|") + "-" + str(row[3]).replace(" ","|") + "-" + str(row[4]) + "-" + str(row[5]) + "-" + str(row[6]) + "-" + str(row[7])
+                        despachos.append(despacho+"/")
+
+                    msg = "leerdespacho " + "".join(despachos)
+                    print(msg)
+                    print("Despachos leidos")
+                    server.sendall(bytes('00010dbget'+msg,'utf-8'))
+            except:
+                print("Error al leer despachos")
+                server.sendall(bytes('00010dbgetfallo_leerdespacho','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]
