@@ -135,20 +135,40 @@ while True:
 
         while main_menu:
             os.system('cls' if os.name == 'nt' else 'clear')
-            print("""
+            if userType == 2:
+                print("""
             ==========INVENTARIO==========
             Seleccione una opción:
                 1. Inventario
                 2. Despachos
-                3. Usuarios
-                4. Otros
                 0. Salir
             ==============================
             """)
+            else: 
+                print("""
+                ==========INVENTARIO==========
+                Seleccione una opción:
+                    1. Inventario
+                    2. Despachos
+                    3. Usuarios
+                    4. Otros
+                    0. Salir
+                ==============================
+                """)
             opcion = input("OPCION: ")
             if opcion == '1':
                 os.system('cls' if os.name == 'nt' else 'clear')
-                print("""
+                if userType == 2:
+                   print("""
+                ==========INVENTARIO==========
+                Seleccione una opción:
+                    2. Modificar producto
+                    4. Listar productos
+                    0. Regresar
+                ==============================
+                """)
+                else: 
+                    print("""
                 ==========INVENTARIO==========
                 Seleccione una opción:
                     1. Agregar producto
@@ -159,6 +179,10 @@ while True:
                 ==============================
                 """)
                 opcion = input("OPCION: ")
+                if opcion == '1' and userType == 2:
+                    print("No tiene permisos para realizar esta acción")
+                    time.sleep(2)
+                    continue
                 if opcion == '1':
                     os.system('cls' if os.name == 'nt' else 'clear')
                     print("""
@@ -225,6 +249,10 @@ while True:
                         else:
                             print("Error al modificar producto")
                             time.sleep(3)
+                    continue
+                elif opcion == '3' and userType == 2:
+                    print("No tiene permisos para realizar esta acción")
+                    time.sleep(2)
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
@@ -481,7 +509,10 @@ while True:
                     ==============================
                     """)
                     continue
-
+            elif opcion == '3' and userType == 2:
+                print("No tiene permisos para acceder a esta sección")
+                time.sleep(3)
+                continue
             elif opcion == '3':
                 #USUARIOS
                 os.system('cls' if os.name == 'nt' else 'clear')
@@ -581,6 +612,10 @@ while True:
                     ==============================
                     """)
                     continue
+            elif opcion == '4' and userType == 2:
+                print("No tiene permisos para acceder a esta sección")
+                time.sleep(3)
+                continue
             elif opcion == '4':
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print("""
