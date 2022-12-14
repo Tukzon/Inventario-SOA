@@ -113,3 +113,65 @@ while True:
                 else:
                     print("Error al eliminar despacho")
                     server.sendall(bytes('00010despa0','utf-8'))
+
+        elif tipoTransaccion == 'actualizar':
+            session_mail = data[1]
+            despID = data[2]
+            direccion = data[3]
+            responsable = data[4]
+            comprador = data[5]
+            prods = data[6]
+            cantidad = data[7]
+
+            query = []
+
+            if direccion != '/':
+                subquery = "UPDATE despachos SET direccion = '" + direccion + "' WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+                subquery = subquery.replace(" ", "-")
+                query.append(subquery)
+            if responsable != '/':
+                subquery = "UPDATE despachos SET responsable = '" + responsable + "' WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+                subquery = subquery.replace(" ", "-")
+                query.append(subquery)
+            if comprador != '/':
+                subquery = "UPDATE despachos SET comprador = '" + comprador + "' WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+                subquery = subquery.replace(" ", "-")
+                query.append(subquery)
+            if prods != '/':
+                prods = prods.split('-')
+                presubquery = "(SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                subquery = f"UPDATE despachos SET productos = ARRAY{prods}::integer[] WHERE inventario = {presubquery} AND id = " + despID
+                subquery = subquery.replace(" ", "-")
+                query.append(subquery)
+            if cantidad != '/':
+                cantidad = cantidad.split('-')
+                presubquery = "(SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                subquery = f"UPDATE despachos SET cantidad = ARRAY{cantidad}::integer[] WHERE inventario = {presubquery} AND id = " + despID
+                subquery = subquery.replace(" ", "-")
+                query.append(subquery)
+
+            query = "/".join(query)
+            despacho_data = "actualizardespacho " + query
+            aux = fill(len(despacho_data + "dbget"))
+            msg = aux + "dbget" + despacho_data
+            server.sendall(bytes(msg, 'utf-8'))
+            recibido = server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("DEBUG: " + recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'despacho_actualizado':
+                    print("Se ha actualizado el despacho satisfactoriamente")
+                    server.sendall(bytes('00010despa1','utf-8'))
+                else:
+                    print("Error al actualizar despacho")
+                    server.sendall(bytes('00010despa0','utf-8'))
+
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("DEBUG: " + recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'despacho_actualizado':
+                    print("Se ha actualizado el despacho satisfactoriamente")
+                    server.sendall(bytes('00010despa1','utf-8'))
+                else:
+                    print("Error al actualizar despacho")
+                    server.sendall(bytes('00010despa0','utf-8'))

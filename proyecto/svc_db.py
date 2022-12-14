@@ -164,6 +164,19 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetdespacho_no_eliminado','utf-8'))
 
+        if tipoTransaccion == "actualizardespacho":
+            try:
+                query_list = data[1]
+                query_list = query_list.split("/")
+                for query in query_list:
+                    query = query.replace("-", " ")
+                    cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetdespacho_actualizado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetdespacho_no_actualizado','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]

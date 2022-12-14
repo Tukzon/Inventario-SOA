@@ -294,7 +294,7 @@ while True:
                     mail = input("Ingrese el mail de responsable de despacho: ")
                     direccion = input("Ingrese la direccion de despacho: ")
                     comprador = input("Ingrese el nombre de persona que recibirá: ")
-                    totalProd = input("Ingrese el total de productos: ")
+                    totalProd = input("Ingrese el total de productos diferentes: ")
                     prods = []
                     qtt = []
                     for i in range(int(totalProd)):
@@ -330,19 +330,53 @@ while True:
                     ==============================
                     """)
                     idDesp = input("Ingrese el id del despacho: ")
-                    totalProd = input("Ingrese el total de productos: ")
-                    prods = []
-                    for i in range(int(totalProd)):
-                        idProd = input("Ingrese el id del producto: ")
-                        cantidad = input("Ingrese la cantidad del producto: ")
-                        prods.append(idProd + " " + cantidad)
-                    datos = idDesp + " " + totalProd + " " + str(prods)
-                    aux = fill(len(datos+ 'modes'))
-                    msg = aux + 'modes' + datos
+                    direccion = input("Ingrese la direccion de despacho: (presione enter para no modificar) ")
+                    comprador = input("Ingrese el nombre de persona que recibirá: (presione enter para no modificar) ")
+                    responsable = input("Ingrese el mail de responsable de despacho: (presione enter para no modificar) ")
+                    totalProd = input("Ingrese el total de productos diferentes: (presione enter para no modificar) ")
+
+                    if totalProd == '' and direccion == '' and comprador == '' and responsable == '':
+                        print("No se modificó nada")
+                        time.sleep(3)
+                        continue
+
+                    prods = '/'
+                    qtt = '/'
+                    if totalProd != '':
+                        prods = []
+                        qtt = []
+                        for i in range(int(totalProd)):
+                            idProd = input("Ingrese el id del producto: ")
+                            cantidad = input("Ingrese la cantidad del producto: ")
+                            prods.append(idProd)
+                            qtt.append(cantidad)
+                        prods = '-'.join(prods)
+                        qtt = '-'.join(qtt)
+                    
+                    if direccion == '':
+                        direccion = '/'
+                    if comprador == '':
+                        comprador = '/'
+                    if responsable == '':
+                        responsable = '/'
+
+                    
+                    datos ="actualizar" + " " + session_mail + " " + idDesp + " " + direccion + " " + comprador + " " + responsable + " " + str(prods) + " " + str(qtt)
+                    aux = fill(len(datos+ 'despa'))
+                    msg = aux + 'despa' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('despa')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '1':
+                            print("Despacho modificado satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al modificar despacho")
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
