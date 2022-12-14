@@ -296,17 +296,31 @@ while True:
                     comprador = input("Ingrese el nombre de persona que recibirá: ")
                     totalProd = input("Ingrese el total de productos: ")
                     prods = []
+                    qtt = []
                     for i in range(int(totalProd)):
+                        print("====================================")
                         idProd = input("Ingrese el id del producto: ")
+                        prods.append(idProd)
                         cantidad = input("Ingrese la cantidad del producto: ")
-                        prods.append(idProd + "-" + cantidad)
-                    datos = "registrar "+ session_mail+ " " +mail + " " +direccion+ " "+comprador + " " +str(prods)
+                        qtt.append(cantidad)
+                    prods = '-'.join(prods)
+                    qtt = '-'.join(qtt)
+                    datos = "registrar "+ session_mail+ " " +mail + " " +direccion+ " "+comprador + " " +str(prods)+ " " +str(qtt)
                     aux = fill(len(datos+ 'despa'))
                     msg = aux + 'despa' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('despa')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '1':
+                            print("Despacho generado satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al agregar despacho")
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '2':
                     os.system('cls' if os.name == 'nt' else 'clear')

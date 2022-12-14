@@ -32,12 +32,35 @@ while True:
         direccion = data[3]
         comprador = data[4]
         productos = data[5]
+        cantidad = data[6]
 
-        productossplitarray = ""
-        cantidadsplitarray = ""
+        productos = productos.split("-")
+        cantidad = cantidad.split("-")
 
         if tipoTransaccion == 'registrar':
-            #SEPARAR VALORES DE PRODUCTOS EN ID - CANTIDAD PARA APLICAR EN QUERY
+
+
             subquery = "(SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
-            query = "INSERT INTO despachos (inventario, productos, cantidad, direccion, responsable, comprador) VALUES (" + subquery + ", '" + productossplitarray + "', '" + cantidadsplitarray + "', '" + direccion + "', '" + email_responsable + "', '" + comprador + "')"
+            #query = "INSERT INTO despachos (inventario, productos, cantidad, direccion, responsable, comprador) VALUES (" + subquery + ", '" + str(productos) + "', '" + str(cantidad) + "', '" + direccion + "', '" + email_responsable + "', '" + comprador + "')"
+
+            query = f"INSERT INTO despachos (inventario, productos, cantidad, direccion, responsable, comprador) VALUES ({subquery}, ARRAY{productos}::integer[], ARRAY{cantidad}::integer[], '{direccion}', '{email_responsable}', '{comprador}')"
+
             
+            
+            #print(query)
+            query = query.replace(" ", "-")
+            despacho_data ="agregardespacho " +session_mail + " " + query
+            aux = fill(len(despacho_data + "dbget"))
+            msg = aux + "dbget" + despacho_data
+            server.send(bytes(msg, 'utf-8'))
+            recibido = server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                #print("DEBUG: " + recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'despacho_no_agregado':
+                    print("Error al registrar despacho")
+                    server.sendall(bytes('00010despa0','utf-8'))
+                else:
+                    #print("finish: " + recibido.decode('utf-8'))
+                    print("Despacho registrado satisfactoriamente")
+                    server.sendall(bytes('00010despa1','utf-8'))

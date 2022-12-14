@@ -119,6 +119,18 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetproducto_no_eliminado','utf-8'))
 
+        if tipoTransaccion == "agregardespacho":
+            try:
+                session_mail = data[1]
+                query = data[2]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetdespacho_agregado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetdespacho_no_agregado','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]
@@ -144,5 +156,6 @@ while True:
                     server.sendall(bytes('00010dbget'+msg,'utf-8'))
             except:
                 server.sendall(bytes('00010dbgetfallo_alerta','utf-8'))
+
 
 
