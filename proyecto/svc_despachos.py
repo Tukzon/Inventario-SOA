@@ -66,9 +66,9 @@ while True:
             despID = data[2]
 
             if despID == '0':
-                query = "SELECT * FROM despachos WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "')"
+                query = "SELECT * FROM despachos WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND valido = '1'"
             else:
-                query = "SELECT * FROM despachos WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+                query = "SELECT * FROM despachos WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID + " AND valido = '1'"
             
             query = query.replace(" ", "-")
             despacho_data = "leerdespacho " + query
@@ -86,3 +86,30 @@ while True:
                 else:
                     print("Despacho leido satisfactoriamente")
                     server.sendall(bytes('00010despa1'+recibido.decode('utf-8'),'utf-8'))
+
+        elif tipoTransaccion == 'eliminar':
+            session_mail = data[1]
+            permanente = data[2]
+            despID = data[3]
+            print(permanente)
+            if "s" in permanente.lower():
+                query = "DELETE FROM despachos WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+            else:
+                query = "UPDATE despachos SET valido = '0' WHERE inventario = (SELECT inventarios.id FROM inventarios WHERE inventarios.admin_mail = '" + session_mail + "') AND id = " + despID
+            
+            query = query.replace(" ", "-")
+            despacho_data = "eliminardespacho " + query
+            aux = fill(len(despacho_data + "dbget"))
+            msg = aux + "dbget" + despacho_data
+            server.sendall(bytes(msg, 'utf-8'))
+            recibido = server.recv(4096)
+
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("DEBUG: " + recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'despacho_eliminado':
+                    print("Se ha eliminado el despacho satisfactoriamente")
+                    server.sendall(bytes('00010despa1','utf-8'))
+                else:
+                    print("Error al eliminar despacho")
+                    server.sendall(bytes('00010despa0','utf-8'))

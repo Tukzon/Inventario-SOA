@@ -153,6 +153,17 @@ while True:
                 print("Error al leer despachos")
                 server.sendall(bytes('00010dbgetfallo_leerdespacho','utf-8'))
 
+        if tipoTransaccion == "eliminardespacho":
+            try:
+                query = data[1]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetdespacho_eliminado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetdespacho_no_eliminado','utf-8'))
+
         if tipoTransaccion == "alertastock":
             try:
                 session_mail = data[1]
