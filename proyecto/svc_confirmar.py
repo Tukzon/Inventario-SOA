@@ -27,17 +27,26 @@ while True:
         data = target.split()
         session_mail = data[0]
         idDesp = data[1]
+        recibe = data[2]
+        print(data)
+        if len(data) == 4:
+            query = "UPDATE despachos SET entregado = '1' WHERE id = '" + idDesp + "' AND entregado = '0'"
+            query = query.replace(" ", "-")
+            conde_data = "confirmar "+session_mail + " " + recibe + " " + query + " " + str(1)
+        else:
+            query1 = "SELECT despachos.comprador FROM despachos WHERE id = '" + idDesp + "' AND entregado = '0'"
+            query2 = "UPDATE despachos SET entregado = '1' WHERE id = '" + idDesp + "' AND entregado = '0'"
+            query1 = query1.replace(" ", "-")
+            query2 = query2.replace(" ", "-")
+            query = query1 + "/" + query2
+            conde_data = "confirmar "+session_mail + " " + recibe + " " + query
 
-        query = "UPDATE despachos SET estado = '1' WHERE id = '" + idDesp
-        query = query.replace(" ", "-")
-        conde_data = "confirmar "+query
-
-        aux = fill(len(conde_data+ 'dbset'))
-        msg = aux + 'dbset' + conde_data
+        aux = fill(len(conde_data+ 'dbget'))
+        msg = aux + 'dbget' + conde_data
 
         server.sendall(bytes(msg,'utf-8'))
         recibido=server.recv(4096)
-        if recibido.decode('utf-8').find('dbset')!=-1:
+        if recibido.decode('utf-8').find('dbget')!=-1:
             recibido = recibido[12:]
             if recibido.decode('utf-8') == 'confirmado':
                 print("Despacho confirmado")

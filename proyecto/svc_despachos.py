@@ -83,6 +83,9 @@ while True:
                 if recibido.decode('utf-8') == 'fallo_leerdespacho':
                     print("Error al leer despacho")
                     server.sendall(bytes('00010despa0','utf-8'))
+                elif recibido.decode('utf-8') == 'no_match':
+                    print("Comprador no coincide con el inventario")
+                    server.sendall(bytes('00010despa2','utf-8'))
                 else:
                     print("Despacho leido satisfactoriamente")
                     server.sendall(bytes('00010despa1'+recibido.decode('utf-8'),'utf-8'))

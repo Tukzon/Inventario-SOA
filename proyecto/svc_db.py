@@ -205,7 +205,7 @@ while True:
                 else:
                     despachos = []
                     for row in rows:
-                        despacho = str(row[0]) + "-" + str(row[1]) + "-" + str(row[2]).replace(" ","|") + "-" + str(row[3]).replace(" ","|") + "-" + str(row[4]) + "-" + str(row[5]) + "-" + str(row[6]) + "-" + str(row[7])
+                        despacho = str(row[0]) + "-" + str(row[1]) + "-" + str(row[2]).replace(" ","|") + "-" + str(row[3]).replace(" ","|") + "-" + str(row[4]) + "-" + str(row[5]) + "-" + str(row[6]) + "-" + str(row[8])
                         despachos.append(despacho+"/")
 
                     msg = "leerdespacho " + "".join(despachos)
@@ -239,6 +239,34 @@ while True:
             except:
                 db.rollback()
                 server.sendall(bytes('00010dbgetdespacho_no_actualizado','utf-8'))
+
+        if tipoTransaccion == "confirmar":
+            try:
+                query = data[3]
+                s_mail = data[1]
+                recibe = data[2]
+                if len(data) == 4:
+                    query = query.replace("-", " ")
+                    cursor.execute(query)
+                    db.commit()
+                    server.sendall(bytes('00010dbgetconfirmado','utf-8'))
+                else:
+                    query_list = query.split("/")
+                    query1 = query_list[0]
+                    query1 = query1.replace("-", " ")
+                    query2 = query_list[1]
+                    query2 = query2.replace("-", " ")
+                    cursor.execute(query1)
+                    result = cursor.fetchone()
+                    if result[0] == recibe:
+                        cursor.execute(query2)
+                        db.commit()
+                        server.sendall(bytes('00010dbgetconfirmado','utf-8'))
+                    else:
+                        server.sendall(bytes('00010dbgetno_match','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetno_confirmado','utf-8'))
 
         if tipoTransaccion == "alertastock":
             try:

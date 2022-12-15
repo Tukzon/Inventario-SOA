@@ -501,7 +501,7 @@ while True:
                             
                             column_alignments = ["right", "left", "right", "left", "center", "center", "center", "right"]
 
-                            print(tabulate.tabulate(data, headers=['ID','Inventario','Productos','Cantidad','Direccion','Responsable','Comprador','Valido'], tablefmt='orgtbl', stralign=column_alignments))
+                            print(tabulate.tabulate(data, headers=['ID','Inventario','Productos','Cantidad','Direccion','Responsable','Comprador','Entregado'], tablefmt='orgtbl', stralign=column_alignments))
 
                             input("\nPresione enter para continuar...")
                             continue
@@ -722,19 +722,44 @@ while True:
                     ==============================
                     """)
                     idDesp = input("Ingrese el id del despacho: ")
-                    datos = session_mail+" "+idDesp
+                    persona = input("Ingrese el nombre de la persona que recibe: ")
+                    datos = session_mail+" "+idDesp + " " + persona
                     aux = fill(len(datos+ 'conde'))
                     msg = aux + 'conde' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
                     if recibido.decode('utf-8').find('conde')!=-1:
-                        recibido=recibido[10:].decode('utf-8')
+                        recibido=recibido[12:].decode('utf-8')
                         if recibido == '1':
                             print("Despacho confirmado correctamente")
+                            time.sleep(3)
+                            continue
+                        elif recibido == '2':
+                            print("La persona que recibe no corresponde con la registrada en el despacho\n")
+                            decision = input("¿Desea confirmar el despacho de todas formas? (s/n): ")
+                            if decision == 's':
+                                datos = session_mail+" "+idDesp + " " + persona + " 1"
+                                aux = fill(len(datos+ 'conde'))
+                                msg = aux + 'conde' + datos
+                                print("mensaje enviado: "+msg)
+                                server.sendall(bytes(msg,'utf-8'))
+                                recibido=server.recv(4096)
+                                if recibido.decode('utf-8').find('conde')!=-1:
+                                    recibido=recibido[12:].decode('utf-8')
+                                    print(recibido)
+                                    if recibido == '1':
+                                        print("Despacho confirmado correctamente")
+                                        time.sleep(3)
+                                        continue
+                                    else:
+                                        print("Error al confirmar despacho")
+                                        time.sleep(3)
+                                        continue
                         else:
                             print("Error al confirmar despacho")
-                        time.sleep(3)
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
@@ -750,7 +775,9 @@ while True:
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
                     if recibido.decode('utf-8').find('monis')!=-1:
-                        monitor = True
+                        #si recibido no contiene la palabra "off" monitor = True
+                        if recibido.decode('utf-8').find('off')==-1:
+                            monitor = True
                         while monitor:
                             recibido = recibido[12:]
                             if recibido.decode('utf-8') == '0':
@@ -765,19 +792,32 @@ while True:
 
                                 data_rows = re.split("/", data)
                                 data_rows = [re.split("-", row) for row in data_rows]
-                                print("Número de productos diferentes: "+str(numProds)+"\n")
-                                print(tabulate.tabulate(data_rows, headers=['ID', 'Nombre', 'Stock'], tablefmt='orgtbl'))
+                                while True:
+                                    try:
+                                        os.system('cls' if os.name == 'nt' else 'clear')
+                                        print("Número de productos diferentes: "+str(numProds)+"\n")
+                                        print(tabulate.tabulate(data_rows, headers=['ID', 'Nombre', 'Stock'], tablefmt='orgtbl'))
+                                        print("\nctrl+c para salir del modo monitor")
+                                        time.sleep(5)
+                                    except KeyboardInterrupt:
+                                        server.sendall(bytes("00010monisoff "+ session_mail,'utf-8'))
+                                        monitor = False
+                                        break
+                                #print("Número de productos diferentes: "+str(numProds)+"\n")
+                                #print(tabulate.tabulate(data_rows, headers=['ID', 'Nombre', 'Stock'], tablefmt='orgtbl'))
                                 
-                                sleep_thread = threading.Thread(target=sleep_thread)
-                                exit_thread = threading.Thread(target=exit_thread)
-                                sleep_thread.start()
-                                exit_thread.start()
+                                #sleep_thread = threading.Thread(target=sleep_thread)
+                                #exit_thread = threading.Thread(target=exit_thread)
+                                #sleep_thread.start()
+                                #exit_thread.start()
 
-                                sleep_thread.join()
-                                exit_thread.join()
+                                #sleep_thread.join()
+                                #exit_thread.join()
 
-                                server.sendall(bytes("00010monisoff "+ session_mail,'utf-8'))
+                                #server.sendall(bytes("00010monisoff "+ session_mail,'utf-8'))
+                                #monitor = False
                                 continue
+                        break
                     if recibido.decode('utf-8').find('monisoff')!=-1:
                         monitor = False
                     continue
