@@ -742,12 +742,12 @@ while True:
                                 datos = session_mail+" "+idDesp + " " + persona + " 1"
                                 aux = fill(len(datos+ 'conde'))
                                 msg = aux + 'conde' + datos
-                                print("mensaje enviado: "+msg)
+                                #print("mensaje enviado: "+msg)
                                 server.sendall(bytes(msg,'utf-8'))
                                 recibido=server.recv(4096)
                                 if recibido.decode('utf-8').find('conde')!=-1:
                                     recibido=recibido[12:].decode('utf-8')
-                                    print(recibido)
+                                    #print(recibido)
                                     if recibido == '1':
                                         print("Despacho confirmado correctamente")
                                         time.sleep(3)
@@ -756,6 +756,10 @@ while True:
                                         print("Error al confirmar despacho")
                                         time.sleep(3)
                                         continue
+                            else:
+                                print("Despacho no confirmado")
+                                time.sleep(3)
+                                continue
                         else:
                             print("Error al confirmar despacho")
                             time.sleep(3)

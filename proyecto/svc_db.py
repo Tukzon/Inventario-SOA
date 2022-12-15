@@ -245,12 +245,15 @@ while True:
                 query = data[3]
                 s_mail = data[1]
                 recibe = data[2]
-                if len(data) == 4:
+                #print(data)
+                if len(data) == 5:
+                    #print("Solo hay una query")
                     query = query.replace("-", " ")
                     cursor.execute(query)
                     db.commit()
                     server.sendall(bytes('00010dbgetconfirmado','utf-8'))
                 else:
+                    #print("Hay mas de una query")
                     query_list = query.split("/")
                     query1 = query_list[0]
                     query1 = query1.replace("-", " ")
@@ -259,12 +262,15 @@ while True:
                     cursor.execute(query1)
                     result = cursor.fetchone()
                     if result[0] == recibe:
+                        #print("Se puede confirmar")
                         cursor.execute(query2)
                         db.commit()
                         server.sendall(bytes('00010dbgetconfirmado','utf-8'))
                     else:
+                        #print("No se puede confirmar")
                         server.sendall(bytes('00010dbgetno_match','utf-8'))
             except:
+                #print("Error al confirmar despacho")
                 db.rollback()
                 server.sendall(bytes('00010dbgetno_confirmado','utf-8'))
 

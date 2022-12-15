@@ -28,7 +28,7 @@ while True:
         session_mail = data[0]
         idDesp = data[1]
         recibe = data[2]
-        print(data)
+        #print(data)
         if len(data) == 4:
             query = "UPDATE despachos SET entregado = '1' WHERE id = '" + idDesp + "' AND entregado = '0'"
             query = query.replace(" ", "-")
@@ -46,11 +46,15 @@ while True:
 
         server.sendall(bytes(msg,'utf-8'))
         recibido=server.recv(4096)
+        #print(recibido)
         if recibido.decode('utf-8').find('dbget')!=-1:
             recibido = recibido[12:]
             if recibido.decode('utf-8') == 'confirmado':
                 print("Despacho confirmado")
                 server.sendall(bytes('00010conde1','utf-8'))
+            elif recibido.decode('utf-8') == 'no_match':
+                print("Comprador no coincide con el inventario")
+                server.sendall(bytes('00010conde2','utf-8'))
             elif recibido.decode('utf-8') == 'fallo_confirmacion':
                 print("Error al confirmar despacho")
                 server.sendall(bytes('00010conde0','utf-8'))
