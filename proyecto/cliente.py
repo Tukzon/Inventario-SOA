@@ -566,15 +566,44 @@ while True:
                     ==============================
                     """)
                     correo = input("Ingrese el correo del usuario a modificar: ")
-                    nombre = input("Ingrese el nuevo nombre del usuario: ")
-                    contra = input("Ingrese la nueva contraseña del usuario: ")
-                    datos = correo + " " + nombre + " " + contra
-                    aux = fill(len(datos+ 'modi2'))
-                    msg = aux + 'modi2' + datos
+                    newCorreo = input("Ingrese el nuevo correo del usuario: (enter para no modificar) ")
+                    nombre = input("Ingrese el nuevo nombre del usuario: (enter para no modificar) ")
+                    contra = input("Ingrese la nueva contraseña del usuario: (enter para no modificar) ")
+                    
+                    if nombre == '' and contra == '' and newCorreo == '':
+                        print("No se modificó ningún dato")
+                        time.sleep(3)
+                        continue
+
+                    if nombre == '':
+                        nombre = '/'
+                    if contra == '':
+                        contra = '/'
+                    if newCorreo == '':
+                        newCorreo = '/'
+
+                    if contra != '/':
+                        hash_pwd = hashlib.sha256(contra.encode('utf-8')).hexdigest()
+                        contra = hash_pwd
+
+                    datos = "actualizar "+session_mail+" "+correo+ " " +newCorreo + " " + nombre + " " + contra
+
+                    aux = fill(len(datos+ 'users'))
+                    msg = aux + 'users' + datos
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('users')!=-1:
+                        recibido = recibido[12:]
+                        #print("DESDE MODIFICAR TRABAJADOR: "+recibido.decode('utf-8'))
+                        if recibido.decode('utf-8') == '1':
+                            print("Trabajador modificado satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al modificar trabajador")
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '3':
                     os.system('cls' if os.name == 'nt' else 'clear')
@@ -587,7 +616,7 @@ while True:
                     data = "eliminar "+session_mail+" "+correo
                     aux = fill(len(data+ 'users'))
                     msg = aux + 'users' + data
-                    print("mensaje enviado: "+msg)
+                    #print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
                     if recibido.decode('utf-8').find('users')!=-1:

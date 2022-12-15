@@ -117,5 +117,42 @@ while True:
                     print("Error al eliminar usuario")
                     server.sendall(bytes('00010users0','utf-8'))
 
+        elif tipoTransaccion == 'actualizar':
+            session_mail = data[1]
+            email = data[2]
+            newCorreo = data[3]
+            nombre = data[4]
+            password = data[5]
+
+            query_list = []
+            if newCorreo != '/':
+                subquery = "UPDATE usuarios SET email = '" + newCorreo + "' WHERE email = '" + email + "' AND inventario = (SELECT id FROM inventarios WHERE admin_mail = '" + session_mail + "')"
+                query_list.append(subquery)
+            if nombre != '/':
+                subquery = "UPDATE usuarios SET nombre = '" + nombre + "' WHERE email = '" + email + "' AND inventario = (SELECT id FROM inventarios WHERE admin_mail = '" + session_mail + "')"
+                query_list.append(subquery)
+            if password != '/':
+                subquery = "UPDATE usuarios SET password = '" + password + "' WHERE email = '" + email + "' AND inventario = (SELECT id FROM inventarios WHERE admin_mail = '" + session_mail + "')"
+                query_list.append(subquery)
+            
+            query = "/".join(query_list)
+            
+            query = query.replace(" ", "-")
+            reg_data = "actualizaruser "+query
+            aux = fill(len(reg_data+ 'dbget'))
+            msg = aux + 'dbget' + reg_data
+            #print("mensaje enviado: "+msg)
+            server.sendall(bytes(msg,'utf-8'))
+            recibido=server.recv(4096)
+            if recibido.decode('utf-8').find('dbget')!=-1:
+                recibido = recibido[12:]
+                print("desde usuario: "+recibido.decode('utf-8'))
+                if recibido.decode('utf-8') == 'usuario_actualizado':
+                    print("Usuario actualizado satisfactoriamente")
+                    server.sendall(bytes('00010users1','utf-8'))
+                else:
+                    print("Error al actualizar usuario")
+                    server.sendall(bytes('00010users0','utf-8'))
+
 
 

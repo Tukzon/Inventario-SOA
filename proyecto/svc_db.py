@@ -120,6 +120,19 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetfallo_eliminaruser','utf-8'))
 
+        if tipoTransaccion == "actualizaruser":
+            try:
+                query_list = data[1]
+                query_list = query_list.split("/")
+                for query in query_list:
+                    query = query.replace("-", " ")
+                    cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetusuario_actualizado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetfallo_actualizaruser','utf-8'))
+
         if tipoTransaccion == "leerprod":
             try:
                 query = data[1]
