@@ -63,10 +63,10 @@ while True:
                 idProd = data[2]
                 userType = int(data[3])
                 if userType != 2:
-                    print("owo?")
+                    #print("owo?")
                     query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id WHERE productos.id = '" + idProd + "' AND inventarios.admin_mail = '" + session_mail + "'"
                 else:
-                    print("UWU")
+                    #print("UWU")
                     query = "SELECT productos.id, data_productos.nombre, data_productos.precio, data_productos.descripcion, productos.stock FROM productos INNER JOIN data_productos ON productos.id = data_productos.id INNER JOIN inventarios ON productos.inventario = inventarios.id INNER JOIN usuarios ON inventarios.id = usuarios.inventario WHERE productos.id = '" + idProd + "' AND inventarios.id IN (SELECT usuarios.inventario FROM usuarios WHERE usuarios.email = '" + session_mail + "')"
 
             except:
@@ -123,22 +123,21 @@ while True:
                     query_list.append(query_descripcion)
             else:
                 if nombre != '/':
-                    query_nombre = "UPDATE data_productos SET nombre = '" + nombre + "' WHERE id = '" + idProd + "AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.mail = '" + session_mail + "')"
+                    query_nombre = "UPDATE data_productos SET nombre = '" + nombre + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.email = '" + session_mail + "')"
                     query_nombre = query_nombre.replace(" ", "-")
                     query_list.append(query_nombre)
                 if precio != '/':
-                    query_precio = "UPDATE data_productos SET precio = '" + precio + "' WHERE id = '" + idProd + " AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.mail = '" + session_mail + "')"
+                    query_precio = "UPDATE data_productos SET precio = '" + precio + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.email = '" + session_mail + "')"
                     query_precio = query_precio.replace(" ", "-")
                     query_list.append(query_precio)
                 if cantidad != '/':
-                    query_cantidad = "UPDATE productos SET stock = '" + cantidad + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.mail = '" + session_mail + "')"
+                    query_cantidad = "UPDATE productos SET stock = '" + cantidad + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.email = '" + session_mail + "')"
                     query_cantidad = query_cantidad.replace(" ", "-")
                     query_list.append(query_cantidad)
                 if descripcion != '/':
-                    query_descripcion = "UPDATE data_productos SET descripcion = '" + descripcion + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.mail = '" + session_mail + "')"
+                    query_descripcion = "UPDATE data_productos SET descripcion = '" + descripcion + "' WHERE id = '" + idProd + "' AND inventario = (SELECT usuarios.inventario FROM usuarios WHERE usuarios.email = '" + session_mail + "')"
                     query_descripcion = query_descripcion.replace(" ", "-")
                     query_list.append(query_descripcion)
-
             
             query = "/".join(query_list)
             reg_data = "actualizarprod "+query
