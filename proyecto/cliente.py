@@ -195,7 +195,7 @@ while True:
                     precio = input("Ingrese el precio del producto: ")
                     cantidad = input("Ingrese la cantidad del producto: ")
                     descripcion = input("Ingrese la descripcion del producto: ")
-                    datos = "registrar "+session_mail + " " + idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
+                    datos = "registrar "+session_mail + " " + idProd + " " + nombre + " " + cantidad + " " + precio + " " + descripcion
                     aux = fill(len(datos+ 'prods'))
                     msg = aux + 'prods' + datos
                     print("mensaje enviado: "+msg)
@@ -234,7 +234,7 @@ while True:
                         cantidad = '/'
                     if descripcion == '':
                         descripcion = '/'
-                    datos = "actualizar "+session_mail+ " "+ idProd + " " + nombre + " " + precio + " " + cantidad + " " + descripcion
+                    datos = "actualizar "+session_mail+ " "+ str(idProd) + " " + str(nombre) + " " + str(precio) + " " + str(cantidad) + " " + descripcion + " " + str(userType)
                     aux = fill(len(datos+ 'prods'))
                     msg = aux + 'prods' + datos
                     print("mensaje enviado: "+msg)
@@ -288,11 +288,11 @@ while True:
                     """)
                     prodID = input("Ingrese el id del producto (presione enter para mostrar todos): ")
                     if prodID == '':
-                        datos = "leer "+session_mail
+                        datos = "leer "+session_mail + " " + str(userType)
                         aux = fill(len(datos+ 'prods'))
                         msg = aux + 'prods' + datos
                     else:
-                        datos = "leer "+session_mail + " " + prodID
+                        datos = "leer "+session_mail + " " + str(prodID) + " " + str(userType)
                         aux = fill(len(datos+ 'prods'))
                         msg = aux + 'prods' + datos
 
@@ -312,8 +312,8 @@ while True:
                                 productos[i] = productos[i].split('-')
                                 data.append(productos[i])
 
-                            print(tabulate.tabulate(data, headers=['ID', 'Nombre', 'Cant.', 'Desc.', 'Precio'], tablefmt='orgtbl', stralign=column_alignments))
-                            input("Presione enter para continuar...")
+                            print(tabulate.tabulate(data, headers=['ID', 'Nombre', 'Precio', 'Desc.', 'Cantidad'], tablefmt='orgtbl', stralign=column_alignments))
+                            input("\nPresione enter para continuar...")
                             continue
                         except:
                             print("Error al listar productos")
