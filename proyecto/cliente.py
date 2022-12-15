@@ -10,6 +10,12 @@ import time
 import tabulate
 import re
 
+def sleep_thread():
+    time.sleep(15)
+
+def exit_thread():
+    input("\nPresione enter para salir...")
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('socket', 5000)
 server.connect(server_address)
@@ -737,6 +743,43 @@ while True:
                     Modo monitor stock...
                     ==============================
                     """)
+                    datos = "monis " + session_mail
+                    aux = fill(len(datos+ 'monis'))
+                    msg = aux + 'monis' + datos
+                    #print("mensaje enviado: "+msg)
+                    server.sendall(bytes(msg,'utf-8'))
+                    recibido=server.recv(4096)
+                    if recibido.decode('utf-8').find('monis')!=-1:
+                        monitor = True
+                        while monitor:
+                            recibido = recibido[12:]
+                            if recibido.decode('utf-8') == '0':
+                                print("No hay productos registrados")
+                                time.sleep(3)
+                                continue
+                            else:
+                                recibido = recibido.decode('utf-8').split(' ')
+                                #print(recibido)
+                                numProds = int(recibido[1])
+                                data = recibido[2]
+
+                                data_rows = re.split("/", data)
+                                data_rows = [re.split("-", row) for row in data_rows]
+                                print("Número de productos diferentes: "+str(numProds)+"\n")
+                                print(tabulate.tabulate(data_rows, headers=['ID', 'Nombre', 'Stock'], tablefmt='orgtbl'))
+                                
+                                sleep_thread = threading.Thread(target=sleep_thread)
+                                exit_thread = threading.Thread(target=exit_thread)
+                                sleep_thread.start()
+                                exit_thread.start()
+
+                                sleep_thread.join()
+                                exit_thread.join()
+
+                                server.sendall(bytes("00010monisoff "+ session_mail,'utf-8'))
+                                continue
+                    if recibido.decode('utf-8').find('monisoff')!=-1:
+                        monitor = False
                     continue
                 else:
                     os.system('cls' if os.name == 'nt' else 'clear')

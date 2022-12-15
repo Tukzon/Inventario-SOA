@@ -26,7 +26,7 @@ while True:
         datos = datos[10:]
         target = datos.decode()
         data = target.split()
-        print(data)
+        #print(data)
         tipoTransaccion = data[0]
 
         if tipoTransaccion == 'registrar':

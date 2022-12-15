@@ -24,4 +24,5 @@ start_service svc_usuarios.py &
 start_service svc_productos.py &
 start_service svc_alerta.py &
 start_service svc_confirmar.py &
-start_service svc_despachos.py
+start_service svc_despachos.py &
+start_service svc_monitor.py

@@ -25,6 +25,7 @@ print("Iniciado servicio de base de datos")
 recibido=server.recv(4096)
 
 alertasActivas = []
+monitoresActivos = []
 
 while True:
     datos=server.recv(4096)
@@ -251,7 +252,7 @@ while True:
                 else:
                     if session_mail not in alertasActivas:
                         alertasActivas.append(session_mail)
-                        #threading.Thread(target=alertaStock, args=(session_mail, rows)).start()
+                        threading.Thread(target=alertaStock, args=(session_mail, rows)).start()
                     else:
                         server.sendall(bytes('00010dbgetalerta_activa','utf-8'))
                     numProds = len(rows)
@@ -264,6 +265,28 @@ while True:
                     server.sendall(bytes('00010dbget'+msg,'utf-8'))
             except:
                 server.sendall(bytes('00010dbgetfallo_alerta','utf-8'))
+
+        if tipoTransaccion == "monitor":
+            try:
+                session_mail = data[1]
+                query = data[2]
+                query = query.replace("-", " ")
+                #print(query)
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                if len(rows) == 0:
+                    server.sendall(bytes('00010dbgetfallo_monitor','utf-8'))
+                else:
+                    numProds = len(rows)
+                    prods = []
+                    for row in rows:
+                        prod = str(row[0]) + "-" + row[1] + "-" + str(row[2])
+                        prods.append(prod)
+                    msg = "monitor " + str(numProds) + " " + "/".join(prods)
+                    #print(msg)
+                    server.sendall(bytes('00010dbget'+msg,'utf-8'))
+            except:
+                server.sendall(bytes('00010dbgetfallo_monitor','utf-8'))
 
 
 
