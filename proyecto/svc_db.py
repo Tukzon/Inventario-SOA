@@ -89,6 +89,37 @@ while True:
                 db.rollback()
                 server.sendall(bytes('00010dbgetproducto_no_registrado','utf-8'))
 
+        if tipoTransaccion == "leeruser":
+            try:
+                query = data[1]
+                query = query.replace("-", " ")
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                if row is None:
+                    print("No posee trabajadores")
+                    server.sendall(bytes('00010dbgetfallo_leeruser','utf-8'))
+                else:
+                    users = []
+                    for row in rows:
+                        user = row[0] + "-" + row[1] + "-" + str(row[2])
+                        users.append(user)
+
+                    msg = "leeruser " + "/".join(users)
+                    #print(msg)
+                    server.sendall(bytes('00010dbget'+msg,'utf-8'))
+            except:
+                print("Error al leer usuarios")
+                server.sendall(bytes('00010dbgetfallo_leeruser','utf-8'))
+
+        if tipoTransaccion == "eliminaruser":
+            try:
+                cursor.execute(query)
+                db.commit()
+                server.sendall(bytes('00010dbgetusuario_eliminado','utf-8'))
+            except:
+                db.rollback()
+                server.sendall(bytes('00010dbgetfallo_eliminaruser','utf-8'))
+
         if tipoTransaccion == "leerprod":
             try:
                 query = data[1]

@@ -548,6 +548,7 @@ while True:
                     recibido=server.recv(4096)
                     if recibido.decode('utf-8').find('users')!=-1:
                         recibido = recibido[12:]
+                        print("DESDE AGREGAR TRABAJADOR: "+recibido.decode('utf-8'))
                         if recibido.decode('utf-8') == '1':
                             print("Trabajador agregado satisfactoriamente")
                             time.sleep(3)
@@ -583,12 +584,23 @@ while True:
                     ==============================
                     """)
                     correo = input("Ingrese el correo del usuario a eliminar: ")
-                    aux = fill(len(correo+ 'elim2'))
-                    msg = aux + 'elim2' + correo
+                    data = "eliminar "+session_mail+" "+correo
+                    aux = fill(len(data+ 'users'))
+                    msg = aux + 'users' + data
                     print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('users')!=-1:
+                        recibido = recibido[12:]
+                        #print("DESDE ELIMINAR TRABAJADOR: "+recibido.decode('utf-8'))
+                        if recibido.decode('utf-8') == '1':
+                            print("Trabajador eliminado satisfactoriamente")
+                            time.sleep(3)
+                            continue
+                        else:
+                            print("Error al eliminar trabajador")
+                            time.sleep(3)
+                            continue
                     continue
                 elif opcion == '4':
                     os.system('cls' if os.name == 'nt' else 'clear')
@@ -597,12 +609,29 @@ while True:
                     Listando usuarios...
                     ==============================
                     """)
-                    aux = fill(len('lsus'))
-                    msg = aux + 'lsusr'
-                    print("mensaje enviado: "+msg)
+                    data = "leer "+session_mail
+                    aux = fill(len(data+ 'users'))
+                    msg = aux + 'users' + data
+                    #print("mensaje enviado: "+msg)
                     server.sendall(bytes(msg,'utf-8'))
                     recibido=server.recv(4096)
-                    print(recibido[10:].decode('utf-8'))
+                    if recibido.decode('utf-8').find('users')!=-1:
+                        recibido = recibido[12:]
+                        if recibido.decode('utf-8') == '0':
+                            print("No hay trabajadores registrados")
+                            time.sleep(3)
+                            continue
+                        else:
+                            recibido = recibido.decode('utf-8').split(' ')
+                            print(recibido)
+                            data = recibido[1]
+
+                            data_rows = re.split("/", data)
+                            data_rows = [re.split("-", row) for row in data_rows]
+
+                            print(tabulate.tabulate(data_rows, headers=['Correo', 'Nombre', 'Inventario'], tablefmt='orgtbl'))
+                            input("\nPresione enter para continuar...")
+                            continue
                     continue
                 elif opcion == '0':
                     os.system('cls' if os.name == 'nt' else 'clear')
